@@ -81,7 +81,7 @@ class ViewController: CommonVideoViewController {
         
         
         //starting overlay
-        let startOverlayImage = Utility.getImageWithColor(UIColor.blackColor(), size: CGSizeMake(widthBar!, widthBar!))
+        let startOverlayImage = Utility.getImageWithColor(UIColor.redColor(), size: CGSizeMake(widthBar!, widthBar!))
         let startOverlayLayer = CALayer()
         startOverlayLayer.contents = startOverlayImage.CGImage as? AnyObject
         if size.width > size.height {
@@ -93,7 +93,7 @@ class ViewController: CommonVideoViewController {
         
         
         //ending overlay
-        let endOverlayImage = Utility.getImageWithColor(UIColor.blackColor(), size: CGSizeMake(widthBar!, widthBar!))
+        let endOverlayImage = Utility.getImageWithColor(UIColor.greenColor(), size: CGSizeMake(widthBar!, widthBar!))
         let endOverlayLayer = CALayer()
         endOverlayLayer.contents = endOverlayImage.CGImage as? AnyObject
         if size.width > size.height {

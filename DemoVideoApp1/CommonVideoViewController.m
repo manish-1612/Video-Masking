@@ -8,7 +8,11 @@
 
 #import "CommonVideoViewController.h"
 
-@interface CommonVideoViewController ()
+@interface CommonVideoViewController (){
+    NSURL *savedUrl;
+    BOOL isOverlappingCompleted;
+    CGSize savedRenderSize;
+}
 
 @end
 
@@ -69,6 +73,7 @@
 
 - (void)videoOutput
 {
+    isOverlappingCompleted = false;
 
   // 2 - Create AVMutableComposition object. This object will hold your AVMutableCompositionTrack instances.
   AVMutableComposition *mixComposition = [[AVMutableComposition alloc] init];
@@ -105,6 +110,7 @@
     videoAssetOrientation_ = UIImageOrientationDown;
   }
   [videolayerInstruction setTransform:videoAssetTrack.preferredTransform atTime:kCMTimeZero];
+
   [videolayerInstruction setOpacity:0.0 atTime:self.videoAsset.duration];
 
   // 3.3 - Add instructions
@@ -123,12 +129,13 @@
   renderWidth = naturalSize.width;
   renderHeight = naturalSize.height;
   mainCompositionInst.renderSize = CGSizeMake(renderWidth, renderHeight);
+  savedRenderSize = mainCompositionInst.renderSize;
   mainCompositionInst.instructions = [NSArray arrayWithObject:mainInstruction];
   mainCompositionInst.frameDuration = CMTimeMake(1, 30);
 
   [self applyVideoEffectsToComposition:mainCompositionInst size:naturalSize];
     
-    [self frameVideosSideBySideWithComposition:mixComposition andVideoComposition:mainCompositionInst];
+  [self exportVideoToLibraryWithComposition:mixComposition andVideoComposition:mainCompositionInst];
   
 }
 
@@ -148,12 +155,18 @@
               [self presentViewController:alertController animated:YES completion:nil];
 
           } else {
-              UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Video saved" message:@"Saved to photo album" preferredStyle:UIAlertControllerStyleAlert];
               
-              UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-              [alertController addAction:ok];
-              
-              [self presentViewController:alertController animated:YES completion:nil];
+              if (isOverlappingCompleted == true) {
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Video saved" message:@"Saved to photo album" preferredStyle:UIAlertControllerStyleAlert];
+  
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                [alertController addAction:ok];
+  
+                [self presentViewController:alertController animated:YES completion:nil];
+              }else{
+                savedUrl = session.outputURL;
+                [self overlapVideos];
+              }
           }
         });
       }];
@@ -161,12 +174,7 @@
   }
 }
 
-- (void)frameVideosSideBySideWithComposition:(AVMutableComposition*)composition andVideoComposition:(AVMutableVideoComposition *)videoComposition{
-    
-    
-    
-    
-    
+- (void)exportVideoToLibraryWithComposition:(AVMutableComposition*)composition andVideoComposition:(AVMutableVideoComposition *)videoComposition{
     
     // 4 - Get path
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -190,6 +198,86 @@
 
 }
 
+
+- (void) overlapVideos{
+    
+    //First load your videos using AVURLAsset. Make sure you give the correct path of your videos.
+    
+    AVURLAsset* firstAsset = [AVURLAsset URLAssetWithURL:savedUrl options:nil];
+    AVURLAsset * secondAsset = [AVURLAsset URLAssetWithURL:savedUrl options:nil];
+    
+    //Create AVMutableComposition Object which will hold our multiple AVMutableCompositionTrack or we can say it will hold our multiple videos.
+    AVMutableComposition* mixComposition = [[AVMutableComposition alloc] init];
+    
+    //Now we are creating the first AVMutableCompositionTrack containing our first video and add it to our AVMutableComposition object.
+    AVMutableCompositionTrack *firstTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    
+    //Now we set the length of the firstTrack equal to the length of the firstAsset and add the firstAsset to out newly created track at kCMTimeZero so video plays from the start of the track.
+    [firstTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, firstAsset.duration) ofTrack:[[firstAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] atTime:kCMTimeZero error:nil];
+    
+    //Repeat the same process for the 2nd track as we did above for the first track.
+    AVMutableCompositionTrack *secondTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    [secondTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, secondAsset.duration) ofTrack:[[secondAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] atTime:kCMTimeZero error:nil];
+    
+    //See how we are creating AVMutableVideoCompositionInstruction object. This object will contain the array of our AVMutableVideoCompositionLayerInstruction objects. You set the duration of the layer. You should add the length equal to the length of the longer asset in terms of duration.
+    AVMutableVideoCompositionInstruction * MainInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    
+    MainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, firstAsset.duration);
+    
+    //We will be creating 2 AVMutableVideoCompositionLayerInstruction objects. Each for our 2 AVMutableCompositionTrack. Here we are creating AVMutableVideoCompositionLayerInstruction for out first track. See how we make use of Affinetransform to move and scale our First Track. So it is displayed at the bottom of the screen in smaller size.(First track in the one that remains on top).
+    //Note: You have to apply transformation to scale and move according to your video size.
+    
+    AVMutableVideoCompositionLayerInstruction *FirstlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:firstTrack];
+    CGAffineTransform Scale = CGAffineTransformMakeScale(0.8f,0.8f);
+    CGAffineTransform Move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 0.0);
+    [FirstlayerInstruction setTransform:CGAffineTransformConcat(Scale,Move) atTime:kCMTimeZero];
+    [FirstlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
+    
+    //Here we are creating AVMutableVideoCompositionLayerInstruction for our second track.see how we make use of Affinetransform to move and scale our second Track.
+    AVMutableVideoCompositionLayerInstruction *SecondlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:secondTrack];
+    CGAffineTransform SecondScale = CGAffineTransformMakeScale(0.8f,0.8f);
+    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0, 0.0);
+    [SecondlayerInstruction setTransform:CGAffineTransformConcat(SecondScale,SecondMove) atTime:kCMTimeZero];
+    [SecondlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
+
+    
+    //Now we add our 2 created AVMutableVideoCompositionLayerInstruction objects to our AVMutableVideoCompositionInstruction in form of an array.
+    MainInstruction.layerInstructions = [NSArray arrayWithObjects:FirstlayerInstruction,SecondlayerInstruction,nil];;
+    
+    //Now we create AVMutableVideoComposition object.We can add multiple AVMutableVideoCompositionInstruction to this object.We have only one AVMutableVideoCompositionInstruction object in our example.You can use multiple AVMutableVideoCompositionInstruction objects to add multiple layers of effects such as fade and transition but make sure that time ranges of the AVMutableVideoCompositionInstruction objects dont overlap.
+    AVMutableVideoComposition *MainCompositionInst = [AVMutableVideoComposition videoComposition];
+    MainCompositionInst.instructions = [NSArray arrayWithObject:MainInstruction];
+    MainCompositionInst.frameDuration = CMTimeMake(1, 30);
+    MainCompositionInst.renderSize = savedRenderSize;
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *myPathDocs = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"OverlapVideo-%d.mov",arc4random() % 1000]];
+    
+    
+    
+    if([[NSFileManager defaultManager] fileExistsAtPath:myPathDocs])
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:myPathDocs error:nil];
+    }
+    
+    NSURL *url = [NSURL fileURLWithPath:myPathDocs];
+    
+    AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:mixComposition presetName:AVAssetExportPresetHighestQuality];
+    exporter.outputURL=url;
+    [exporter setVideoComposition:MainCompositionInst];
+    exporter.outputFileType = AVFileTypeQuickTimeMovie;
+    
+    isOverlappingCompleted = true;
+    
+    [exporter exportAsynchronouslyWithCompletionHandler:^
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self exportDidFinish:exporter];
+        });
+    }];
+    
+}
 
 
 @end
