@@ -140,38 +140,41 @@
 }
 
 - (void)exportDidFinish:(AVAssetExportSession*)session {
-  if (session.status == AVAssetExportSessionStatusCompleted) {
-    NSURL *outputURL = session.outputURL;
-    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
-      [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
-        dispatch_async(dispatch_get_main_queue(), ^{
-          if (error) {
-              UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Video Saving Failed" preferredStyle:UIAlertControllerStyleAlert];
-              
-              UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-              [alertController addAction:ok];
-              
-              [self presentViewController:alertController animated:YES completion:nil];
-
-          } else {
-              
-              if (isOverlappingCompleted == true) {
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Video saved" message:@"Saved to photo album" preferredStyle:UIAlertControllerStyleAlert];
-  
-                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-                [alertController addAction:ok];
-  
-                [self presentViewController:alertController animated:YES completion:nil];
-              }else{
-                savedUrl = session.outputURL;
-                [self overlapVideos];
-              }
-          }
-        });
-      }];
+    
+    if (isOverlappingCompleted) {
+        if (session.status == AVAssetExportSessionStatusCompleted) {
+            NSURL *outputURL = session.outputURL;
+            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+            if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
+                [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (error) {
+                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Video Saving Failed" preferredStyle:UIAlertControllerStyleAlert];
+                            
+                            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                            [alertController addAction:ok];
+                            
+                            [self presentViewController:alertController animated:YES completion:nil];
+                            
+                        } else {
+                            
+                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Video saved" message:@"Saved to photo album" preferredStyle:UIAlertControllerStyleAlert];
+                            
+                            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                            [alertController addAction:ok];
+                            
+                            [self presentViewController:alertController animated:YES completion:nil];
+                        }
+                    });
+                }];
+            }
+        }
+    }else{
+        savedUrl = session.outputURL;
+        [self overlapVideos];
     }
-  }
+    
+    
 }
 
 - (void)exportVideoToLibraryWithComposition:(AVMutableComposition*)composition andVideoComposition:(AVMutableVideoComposition *)videoComposition{
@@ -228,15 +231,20 @@
     //Note: You have to apply transformation to scale and move according to your video size.
     
     AVMutableVideoCompositionLayerInstruction *FirstlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:firstTrack];
+    
+    
+    
     CGAffineTransform Scale = CGAffineTransformMakeScale(0.9f,0.9f);
-    CGAffineTransform Move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 25.0);
-    [FirstlayerInstruction setTransform:CGAffineTransformConcat(Scale,Move) atTime:kCMTimeZero];
+    CGAffineTransform Move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 50.0);
+
+    
+    [FirstlayerInstruction setTransform:CGAffineTransformConcat(Move,Scale) atTime:kCMTimeZero];
     [FirstlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
     
     //Here we are creating AVMutableVideoCompositionLayerInstruction for our second track.see how we make use of Affinetransform to move and scale our second Track.
     AVMutableVideoCompositionLayerInstruction *SecondlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:secondTrack];
     CGAffineTransform SecondScale = CGAffineTransformMakeScale(0.9f,0.9f);
-    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0, 25.0);
+    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0, 50.0);
     [SecondlayerInstruction setTransform:CGAffineTransformConcat(SecondScale,SecondMove) atTime:kCMTimeZero];
     [SecondlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
 
