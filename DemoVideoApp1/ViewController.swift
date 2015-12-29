@@ -27,40 +27,39 @@ class ViewController: CommonVideoViewController {
     }
     
    
-    /*
-    override func applyVideoEffectsToComposition(composition : AVMutableVideoComposition , size : CGSize){
+    @IBAction func openGalleryForViewingVideo(sender: AnyObject) {
         
-        let borderImage = Utility.getImageWithColor(UIColor.blackColor(), size: size)
+        // 1 - Early exit if there's no video file selected
+        if (self.videoAsset == nil) {
+            
+            let alertController = UIAlertController(title: "Error", message: "Please open camera for taking video first", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            let ok = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Destructive, handler: nil)
+            
+            alertController.addAction(ok)
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
+            
+            return;
+        }
+
         
-        let backgroundLayer = CALayer()
-        backgroundLayer.contents = [borderImage.CGImage] as? AnyObject
-        backgroundLayer.frame = CGRectMake(0, 0, size.width, size.height)
-        backgroundLayer.masksToBounds = true
-        
-        let widthBar : CGFloat?
-        
-        if size.height > size.width {
-            widthBar = size.width
-        }else{
-            widthBar = size.height
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.SavedPhotosAlbum){
+            let imagePicker = UIImagePickerController()//[[UIImagePickerController alloc] init];
+            imagePicker.delegate = self
+            imagePicker.sourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum
+            imagePicker.mediaTypes = [kUTTypeMovie as String]
+            imagePicker.allowsEditing = false
+            imagePicker.modalPresentationStyle = .Custom
+            self.presentViewController(imagePicker, animated: true, completion: nil)
         }
         
-        let videoLayer = CALayer()
-        videoLayer.frame = CGRectMake(0.0, 0.0, size.width, size.height);
-        videoLayer.cornerRadius = widthBar!/2.0
-        videoLayer.masksToBounds = true
-        
-        
-        
-        
-        let parentLayer = CALayer()
-        parentLayer.frame = CGRectMake(0, 0, size.width, size.height);
-        parentLayer.addSublayer(backgroundLayer)
-        parentLayer.addSublayer(videoLayer)
+    }
     
-        composition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, inLayer: parentLayer)
-    }*/
-
+    override func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        
+        self.dismissViewControllerAnimated(false, completion: nil)
+    }
     
     
     override func applyVideoEffectsToComposition(composition : AVMutableVideoComposition , size : CGSize){
@@ -119,4 +118,41 @@ class ViewController: CommonVideoViewController {
     }
     
 }
+
+
+
+
+/*
+override func applyVideoEffectsToComposition(composition : AVMutableVideoComposition , size : CGSize){
+
+let borderImage = Utility.getImageWithColor(UIColor.blackColor(), size: size)
+
+let backgroundLayer = CALayer()
+backgroundLayer.contents = [borderImage.CGImage] as? AnyObject
+backgroundLayer.frame = CGRectMake(0, 0, size.width, size.height)
+backgroundLayer.masksToBounds = true
+
+let widthBar : CGFloat?
+
+if size.height > size.width {
+widthBar = size.width
+}else{
+widthBar = size.height
+}
+
+let videoLayer = CALayer()
+videoLayer.frame = CGRectMake(0.0, 0.0, size.width, size.height);
+videoLayer.cornerRadius = widthBar!/2.0
+videoLayer.masksToBounds = true
+
+
+
+
+let parentLayer = CALayer()
+parentLayer.frame = CGRectMake(0, 0, size.width, size.height);
+parentLayer.addSublayer(backgroundLayer)
+parentLayer.addSublayer(videoLayer)
+
+composition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, inLayer: parentLayer)
+}*/
 

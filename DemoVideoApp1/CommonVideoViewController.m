@@ -69,18 +69,6 @@
 
 - (void)videoOutput
 {
-  // 1 - Early exit if there's no video file selected
-  if (!self.videoAsset) {
-      
-      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Please Load a Video Asset First" preferredStyle:UIAlertControllerStyleAlert];
-      
-      UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-      [alertController addAction:ok];
-      
-      [self presentViewController:alertController animated:YES completion:nil];
-
-      return;
-  }
 
   // 2 - Create AVMutableComposition object. This object will hold your AVMutableCompositionTrack instances.
   AVMutableComposition *mixComposition = [[AVMutableComposition alloc] init];
@@ -139,26 +127,9 @@
   mainCompositionInst.frameDuration = CMTimeMake(1, 30);
 
   [self applyVideoEffectsToComposition:mainCompositionInst size:naturalSize];
+    
+    [self frameVideosSideBySideWithComposition:mixComposition andVideoComposition:mainCompositionInst];
   
-  // 4 - Get path
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:
-                           [NSString stringWithFormat:@"FinalVideo-%d.mov",arc4random() % 1000]];
-  NSURL *url = [NSURL fileURLWithPath:myPathDocs];
-
-  // 5 - Create exporter
-  AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:mixComposition
-                                                                    presetName:AVAssetExportPresetHighestQuality];
-  exporter.outputURL=url;
-  exporter.outputFileType = AVFileTypeQuickTimeMovie;
-  exporter.shouldOptimizeForNetworkUse = YES;
-  exporter.videoComposition = mainCompositionInst;
-  [exporter exportAsynchronouslyWithCompletionHandler:^{
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self exportDidFinish:exporter];
-    });
-  }];
 }
 
 - (void)exportDidFinish:(AVAssetExportSession*)session {
@@ -190,6 +161,34 @@
   }
 }
 
+- (void)frameVideosSideBySideWithComposition:(AVMutableComposition*)composition andVideoComposition:(AVMutableVideoComposition *)videoComposition{
+    
+    
+    
+    
+    
+    
+    // 4 - Get path
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:
+                             [NSString stringWithFormat:@"FinalVideo-%d.mov",arc4random() % 1000]];
+    NSURL *url = [NSURL fileURLWithPath:myPathDocs];
+    
+    // 5 - Create exporter
+    AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:composition
+                                                                      presetName:AVAssetExportPresetHighestQuality];
+    exporter.outputURL=url;
+    exporter.outputFileType = AVFileTypeQuickTimeMovie;
+    exporter.shouldOptimizeForNetworkUse = YES;
+    exporter.videoComposition = videoComposition;
+    [exporter exportAsynchronouslyWithCompletionHandler:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self exportDidFinish:exporter];
+        });
+    }];
+
+}
 
 
 

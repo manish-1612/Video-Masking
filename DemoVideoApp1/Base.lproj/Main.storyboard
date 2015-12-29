@@ -31,10 +31,26 @@
                                     <action selector="openCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="c6G-Gk-dic"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LfL-I9-Zol">
+                                <rect key="frame" x="150" y="234" width="300" height="38"/>
+                                <color key="backgroundColor" red="0.23982843139999999" green="0.48238079319999999" blue="0.72292850379999996" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="Pja-dK-S6x"/>
+                                    <constraint firstAttribute="height" constant="38" id="T8T-AD-nWJ"/>
+                                </constraints>
+                                <state key="normal" title="Open gallery to see created video">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="openGalleryForViewingVideo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="5Wb-GE-kyV"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="4LL-CD-D3k" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="UJF-Kn-M6t"/>
+                            <constraint firstItem="LfL-I9-Zol" firstAttribute="top" secondItem="4LL-CD-D3k" secondAttribute="bottom" constant="115" id="c1Y-No-K1G"/>
+                            <constraint firstItem="LfL-I9-Zol" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ix1-zh-088"/>
                             <constraint firstItem="4LL-CD-D3k" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="53" id="pxv-J3-BV2"/>
                         </constraints>
                     </view>
