@@ -228,15 +228,15 @@
     //Note: You have to apply transformation to scale and move according to your video size.
     
     AVMutableVideoCompositionLayerInstruction *FirstlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:firstTrack];
-    CGAffineTransform Scale = CGAffineTransformMakeScale(0.8f,0.8f);
-    CGAffineTransform Move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 0.0);
+    CGAffineTransform Scale = CGAffineTransformMakeScale(0.9f,0.9f);
+    CGAffineTransform Move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 25.0);
     [FirstlayerInstruction setTransform:CGAffineTransformConcat(Scale,Move) atTime:kCMTimeZero];
     [FirstlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
     
     //Here we are creating AVMutableVideoCompositionLayerInstruction for our second track.see how we make use of Affinetransform to move and scale our second Track.
     AVMutableVideoCompositionLayerInstruction *SecondlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:secondTrack];
-    CGAffineTransform SecondScale = CGAffineTransformMakeScale(0.8f,0.8f);
-    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0, 0.0);
+    CGAffineTransform SecondScale = CGAffineTransformMakeScale(0.9f,0.9f);
+    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0, 25.0);
     [SecondlayerInstruction setTransform:CGAffineTransformConcat(SecondScale,SecondMove) atTime:kCMTimeZero];
     [SecondlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
 
