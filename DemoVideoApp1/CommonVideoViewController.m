@@ -9,7 +9,8 @@
 #import "CommonVideoViewController.h"
 
 @interface CommonVideoViewController (){
-    NSURL *savedUrl;
+    NSURL *savedUrlFirst;
+    NSURL *savedUrlSecond;
     BOOL isOverlappingCompleted;
     CGSize savedRenderSize;
 }
@@ -29,6 +30,10 @@
 
 - (BOOL)startMediaBrowserFromViewController:(UIViewController*)controller usingDelegate:(id)delegate {
   // 2 - Get image picker
+    
+    savedUrlFirst = nil;
+    savedUrlSecond = nil;
+    
     UIImagePickerController *mediaUI = [[UIImagePickerController alloc] init];
     mediaUI.sourceType = UIImagePickerControllerSourceTypeCamera;
     // Hides the controls for moving & scaling pictures, or for
@@ -57,8 +62,9 @@
   if (CFStringCompare ((__bridge_retained CFStringRef) mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
       self.videoAsset = [AVAsset assetWithURL:[info objectForKey:UIImagePickerControllerMediaURL]];
       
-      [self firstVideoOutput];
-
+      for (int i = 0; i < 2; i++){
+          [self firstVideoOutput];
+      }
   }
 }
 
@@ -139,43 +145,6 @@
   
 }
 
-- (void)exportDidFinish:(AVAssetExportSession*)session {
-    
-    if (isOverlappingCompleted) {
-        if (session.status == AVAssetExportSessionStatusCompleted) {
-            NSURL *outputURL = session.outputURL;
-            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-            if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
-                [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (error) {
-                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Video Saving Failed" preferredStyle:UIAlertControllerStyleAlert];
-                            
-                            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-                            [alertController addAction:ok];
-                            
-                            [self presentViewController:alertController animated:YES completion:nil];
-                            
-                        } else {
-                            
-                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Video saved" message:@"Saved to photo album" preferredStyle:UIAlertControllerStyleAlert];
-                            
-                            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-                            [alertController addAction:ok];
-                            
-                            [self presentViewController:alertController animated:YES completion:nil];
-                        }
-                    });
-                }];
-            }
-        }
-    }else{
-        savedUrl = session.outputURL;
-        [self overlapVideos];
-    }
-    
-    
-}
 
 - (void)exportVideoToLibraryWithComposition:(AVMutableComposition*)composition andVideoComposition:(AVMutableVideoComposition *)videoComposition{
     
@@ -202,12 +171,66 @@
 }
 
 
+- (void)exportDidFinish:(AVAssetExportSession*)session {
+    
+    if (isOverlappingCompleted) {
+        if (session.status == AVAssetExportSessionStatusCompleted) {
+            NSURL *outputURL = session.outputURL;
+            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+            if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
+                [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (error) {
+                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Video Saving Failed" preferredStyle:UIAlertControllerStyleAlert];
+                            
+                            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                            [alertController addAction:ok];
+                            
+                            [self presentViewController:alertController animated:YES completion:nil];
+                            
+                        } else {
+                            
+                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Video saved" message:@"Saved to photo album" preferredStyle:UIAlertControllerStyleAlert];
+                            
+                            
+                            savedUrlFirst = nil;
+                            savedUrlSecond = nil;
+
+                            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                            [alertController addAction:ok];
+                            
+                            [self presentViewController:alertController animated:YES completion:nil];
+                        }
+                    });
+                }];
+            }
+        }
+    }else{
+        
+        
+        if (savedUrlFirst == nil){
+            savedUrlFirst = session.outputURL;
+        }else if (savedUrlSecond == nil){
+            savedUrlSecond = session.outputURL;
+        }
+        
+        
+        if (savedUrlFirst != nil && savedUrlSecond != nil){
+            [self overlapVideos];
+        }
+        
+    }
+    
+    
+}
+
+
 - (void) overlapVideos{
     
     //First load your videos using AVURLAsset. Make sure you give the correct path of your videos.
     
-    AVURLAsset* firstAsset = [AVURLAsset URLAssetWithURL:savedUrl options:nil];
-    AVURLAsset * secondAsset = [AVURLAsset URLAssetWithURL:savedUrl options:nil];
+    AVURLAsset* firstAsset = [AVURLAsset URLAssetWithURL:savedUrlFirst options:nil];
+    AVURLAsset * secondAsset = [AVURLAsset URLAssetWithURL:savedUrlSecond options:nil];
     
     //Create AVMutableComposition Object which will hold our multiple AVMutableCompositionTrack or we can say it will hold our multiple videos.
     AVMutableComposition* mixComposition = [[AVMutableComposition alloc] init];

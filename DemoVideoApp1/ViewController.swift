@@ -10,6 +10,9 @@ import UIKit
 import MobileCoreServices
 
 class ViewController: CommonVideoViewController {
+    
+    
+    var isFirstTime = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +26,7 @@ class ViewController: CommonVideoViewController {
 
 
     @IBAction func openCamera(sender: UIButton) {
+        isFirstTime = true
         startMediaBrowserFromViewController(self, usingDelegate: self)
     }
     
@@ -74,8 +78,17 @@ class ViewController: CommonVideoViewController {
 
         //main overlay
         let overlayLayer = CALayer()
-        let overlayImage =  UIImage(named: "mask_blue.png")
-        overlayLayer.contents = overlayImage!.CGImage as? AnyObject
+        
+        var overlayImage = UIImage()
+        
+        if isFirstTime {
+            overlayImage =  UIImage(named: "mask_blue.png")!
+            isFirstTime = false
+        }else{
+            overlayImage =  UIImage(named: "mask_yellow.png")!
+        }
+        
+        overlayLayer.contents = overlayImage.CGImage as? AnyObject
         overlayLayer.frame = CGRectMake((size.width - widthBar!)/2.0, (size.height - widthBar!)/2.0, widthBar!, widthBar!)
         overlayLayer.masksToBounds = true
         
