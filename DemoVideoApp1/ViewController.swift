@@ -74,7 +74,7 @@ class ViewController: CommonVideoViewController {
 
         //main overlay
         let overlayLayer = CALayer()
-        let overlayImage =  UIImage(named: "mask.png")
+        let overlayImage =  UIImage(named: "mask_blue.png")
         overlayLayer.contents = overlayImage!.CGImage as? AnyObject
         overlayLayer.frame = CGRectMake((size.width - widthBar!)/2.0, (size.height - widthBar!)/2.0, widthBar!, widthBar!)
         overlayLayer.masksToBounds = true

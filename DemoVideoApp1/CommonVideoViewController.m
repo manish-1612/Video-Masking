@@ -57,7 +57,7 @@
   if (CFStringCompare ((__bridge_retained CFStringRef) mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
       self.videoAsset = [AVAsset assetWithURL:[info objectForKey:UIImagePickerControllerMediaURL]];
       
-      [self videoOutput];
+      [self firstVideoOutput];
 
   }
 }
@@ -71,7 +71,7 @@
   // no-op - override this method in the subclass
 }
 
-- (void)videoOutput
+- (void)firstVideoOutput
 {
     isOverlappingCompleted = false;
 
