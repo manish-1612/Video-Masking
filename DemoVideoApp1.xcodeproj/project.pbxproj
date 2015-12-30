@@ -78,8 +78,8 @@
 			children = (
 				792D8D721C313E7900A8EB5A /* CommonVideoViewController.h */,
 				792D8D731C313E7900A8EB5A /* CommonVideoViewController.m */,
-				79D9E7621C317594000880F3 /* mask.png */,
 				79D9E7641C317727000880F3 /* Frame-1.png */,
+				79D9E7621C317594000880F3 /* mask.png */,
 				792D8D5B1C310B7900A8EB5A /* AppDelegate.swift */,
 				792D8D5D1C310B7900A8EB5A /* ViewController.swift */,
 				792D8D6F1C313BEF00A8EB5A /* Utility.swift */,

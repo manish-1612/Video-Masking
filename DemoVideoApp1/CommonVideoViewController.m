@@ -232,29 +232,23 @@
     
     AVMutableVideoCompositionLayerInstruction *FirstlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:firstTrack];
     
-    
-#warning uncomment below code for both view in same orientation
-    /*
-    CGAffineTransform Scale = CGAffineTransformMakeScale(0.9f,0.9f);
-    CGAffineTransform Move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 50.0);
-    [FirstlayerInstruction setTransform:CGAffineTransformConcat(Move,Scale) atTime:kCMTimeZero];
-     */
-    
-#warning uncomment below code for both view in opposite orientation
-    
-    CGAffineTransform rotationTransform = CGAffineTransformMakeRotation(M_PI * 90.0 / 180);
-    CGAffineTransform rotateTranslate = CGAffineTransformTranslate(rotationTransform,320,0);
-    CGAffineTransform rotateScale =  CGAffineTransformMakeScale(0.9f,0.9f);
-    [FirstlayerInstruction setTransform:CGAffineTransformConcat(rotateScale, rotateTranslate) atTime:kCMTimeZero];
 
-    [FirstlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
+    CGAffineTransform move = CGAffineTransformMakeTranslation(savedRenderSize.width / 2.0 + 70.0 -(savedRenderSize.width - savedRenderSize.height)/2.0, 50.0);
+    CGAffineTransform Scale = CGAffineTransformMakeScale(0.9f,0.9f);
+    CGAffineTransform Rotate = CGAffineTransformMakeRotation(M_PI * 180/180);
+    CGAffineTransform rotateTranslate = CGAffineTransformTranslate(Rotate,-savedRenderSize.width,-savedRenderSize.height);
+    [FirstlayerInstruction setTransform:CGAffineTransformConcat(rotateTranslate, CGAffineTransformConcat(move, Scale)) atTime:kCMTimeZero];
+
+
+    [FirstlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0 , 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
+
     
     //Here we are creating AVMutableVideoCompositionLayerInstruction for our second track.see how we make use of Affinetransform to move and scale our second Track.
     AVMutableVideoCompositionLayerInstruction *SecondlayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:secondTrack];
     CGAffineTransform SecondScale = CGAffineTransformMakeScale(0.9f,0.9f);
-    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0, 50.0);
+    CGAffineTransform SecondMove = CGAffineTransformMakeTranslation(-(savedRenderSize.width - savedRenderSize.height)/2.0 + 50.0, 50.0);
     [SecondlayerInstruction setTransform:CGAffineTransformConcat(SecondScale,SecondMove) atTime:kCMTimeZero];
-    [SecondlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0, 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
+    [SecondlayerInstruction setCropRectangle:CGRectMake((savedRenderSize.width - savedRenderSize.height)/2.0 , 0.0, savedRenderSize.height, savedRenderSize.height) atTime:kCMTimeZero];
 
     
     //Now we add our 2 created AVMutableVideoCompositionLayerInstruction objects to our AVMutableVideoCompositionInstruction in form of an array.
