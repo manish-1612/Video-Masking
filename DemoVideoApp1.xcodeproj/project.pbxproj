@@ -23,7 +23,6 @@
 		794124FA1C3407AA00028827 /* mask_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 794124F41C3407AA00028827 /* mask_yellow.png */; };
 		794124FB1C3407AA00028827 /* mask_pink.png in Resources */ = {isa = PBXBuildFile; fileRef = 794124F51C3407AA00028827 /* mask_pink.png */; };
 		794124FC1C3407AA00028827 /* mask_purple.png in Resources */ = {isa = PBXBuildFile; fileRef = 794124F61C3407AA00028827 /* mask_purple.png */; };
-		79D9E7651C317727000880F3 /* Frame-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 79D9E7641C317727000880F3 /* Frame-1.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,7 +46,6 @@
 		794124F41C3407AA00028827 /* mask_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mask_yellow.png; sourceTree = "<group>"; };
 		794124F51C3407AA00028827 /* mask_pink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mask_pink.png; sourceTree = "<group>"; };
 		794124F61C3407AA00028827 /* mask_purple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mask_purple.png; sourceTree = "<group>"; };
-		79D9E7641C317727000880F3 /* Frame-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Frame-1.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,13 +86,7 @@
 			children = (
 				792D8D721C313E7900A8EB5A /* CommonVideoViewController.h */,
 				792D8D731C313E7900A8EB5A /* CommonVideoViewController.m */,
-				79D9E7641C317727000880F3 /* Frame-1.png */,
-				794124F11C3407AA00028827 /* mask_blue.png */,
-				794124F21C3407AA00028827 /* mask_green.png */,
-				794124F31C3407AA00028827 /* mask_red.png */,
-				794124F41C3407AA00028827 /* mask_yellow.png */,
-				794124F51C3407AA00028827 /* mask_pink.png */,
-				794124F61C3407AA00028827 /* mask_purple.png */,
+				79F3DCBF1C3512290060BB82 /* Mask Images */,
 				792D8D5B1C310B7900A8EB5A /* AppDelegate.swift */,
 				792D8D5D1C310B7900A8EB5A /* ViewController.swift */,
 				792D8D6F1C313BEF00A8EB5A /* Utility.swift */,
@@ -105,6 +97,19 @@
 				792D8D711C313E7800A8EB5A /* DemoVideoApp1-Bridging-Header.h */,
 			);
 			path = DemoVideoApp1;
+			sourceTree = "<group>";
+		};
+		79F3DCBF1C3512290060BB82 /* Mask Images */ = {
+			isa = PBXGroup;
+			children = (
+				794124F11C3407AA00028827 /* mask_blue.png */,
+				794124F21C3407AA00028827 /* mask_green.png */,
+				794124F31C3407AA00028827 /* mask_red.png */,
+				794124F41C3407AA00028827 /* mask_yellow.png */,
+				794124F51C3407AA00028827 /* mask_pink.png */,
+				794124F61C3407AA00028827 /* mask_purple.png */,
+			);
+			name = "Mask Images";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -166,7 +171,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				794124FC1C3407AA00028827 /* mask_purple.png in Resources */,
-				79D9E7651C317727000880F3 /* Frame-1.png in Resources */,
 				794124FB1C3407AA00028827 /* mask_pink.png in Resources */,
 				792D8D661C310B7900A8EB5A /* LaunchScreen.storyboard in Resources */,
 				794124F71C3407AA00028827 /* mask_blue.png in Resources */,
