@@ -214,7 +214,6 @@
             savedUrlSecond = session.outputURL;
         }
         
-        
         if (savedUrlFirst != nil && savedUrlSecond != nil){
             [self overlapVideos];
         }
